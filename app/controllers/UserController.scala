@@ -1,7 +1,6 @@
 package controllers
 
 import daos.UserDAO
-import models.{User}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AbstractController, ControllerComponents}
 import services.UserService
@@ -17,15 +16,25 @@ class UserController @Inject()(cc: ControllerComponents, userService: UserServic
     val email = (request.body \ "email").as[String]
     val password = (request.body \ "password").as[String]
     val phoneNumber = (request.body \ "phoneNumber").as[String]
-    val role = (request.body \ "role").as[String]
 
-    println("Name: " + name + "email: "+ email + " phonenumber: "+ phoneNumber + " role: "+ role);
+    println("Name: " + name + "email: "+ email + " phonenumber: "+ phoneNumber );
 
-    userService.createUser(name, email, password,  phoneNumber, role).map { user =>
+    userService.createUser(name, email, password,  phoneNumber).map { user =>
 //      Created(s"User created with ID: ${user.id.get}")
       Created(Json.toJson(user))
     }
   }
+
+  def login() =  Action.async(parse.json){ implicit request =>
+      println("Inside the controller method ")
+      val email = (request.body \ "email").as[String]
+      val password = (request.body \ "password").as[String]
+      userService.authenticate( email, password).map {
+      case Some(user) => Ok(Json.toJson(user))
+      case None => NotFound("User not found")
+    }
+  }
+
 
   def getUser(id: Int) = Action.async { implicit request =>
     userService.getUser(id).map {
@@ -40,9 +49,8 @@ class UserController @Inject()(cc: ControllerComponents, userService: UserServic
     val email = (request.body \ "email").as[String]
     val password = (request.body \ "password").as[String]
     val phoneNumber = (request.body \ "phoneNumber").as[String]
-    val role = (request.body \ "role").as[String]
 
-    userService.updateUser(id, name, email, password, phoneNumber, role).map { result =>
+    userService.updateUser(id, name, email, password, phoneNumber).map { result =>
 //      if (result > 0) Ok(s"User updated with ID: $id")
       if (result > 0) Ok(Json.toJson(result))
       else NotFound("User not found")

@@ -23,6 +23,11 @@ class UserDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(
     db.run(insertQuery)
   }
 
+
+  def authenticate( email: String, password:String) = {
+    db.run(users.filter(user => user.email === email && user.password === password).result.headOption)
+  }
+
   def findById(id: Int): Future[Option[User]] = {
     db.run(users.filter(_.id === id).result.headOption)
   }

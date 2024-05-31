@@ -5,13 +5,14 @@ import slick.jdbc.MySQLProfile.api._
 
 import java.sql.Date
 
-class UserTable(tag: Tag) extends Table[User](tag, "user") {
+class UserTable(tag: Tag) extends Table[User](tag, "users") {
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
   def name = column[String]("name")
   def email = column[String]("email")
   def password = column[String]("password")
   def phoneNumber = column[String]("phoneNumber")
-  def role = column[String]("role")
 
-  def * = (id.?, name, email, password, phoneNumber, role) <> ((User.apply _).tupled, User.unapply)
+  def * = (id.?, name, email, password, phoneNumber) <> ((User.apply _).tupled, User.unapply)
 }
+
+

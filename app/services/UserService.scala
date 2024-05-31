@@ -1,7 +1,7 @@
 package services
 
 import daos.UserDAO
-import models.{Transaction, User}
+import models.User
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -9,13 +9,15 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class UserService @Inject()(userDAO: UserDAO)(implicit ec: ExecutionContext) {
 
-  def createUser(name: String, email: String, password: String, phoneNumber: String, role: String): Future[User] = {
-    val user = User(None, name, email, password, phoneNumber, role )
+  def createUser(name: String, email: String, password: String, phoneNumber: String): Future[User] = {
+    val user = User(None, name, email, password, phoneNumber )
     userDAO.create(user)
   }
-
-  def updateUser(id: Int, name: String, email: String, password: String, phoneNumber: String, role: String): Future[Int] = {
-    val updatedUser = User(Some(id), name, email, password, phoneNumber, role)
+  def authenticate( email: String, password:String) = {
+    userDAO.authenticate( email, password)
+  }
+  def updateUser(id: Int, name: String, email: String, password: String, phoneNumber: String): Future[Int] = {
+    val updatedUser = User(Some(id), name, email, password, phoneNumber)
     userDAO.update(updatedUser)
   }
 
